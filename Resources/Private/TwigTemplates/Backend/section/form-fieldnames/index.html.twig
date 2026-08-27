@@ -1,0 +1,70 @@
+{% extends "module.html.twig" %}
+
+{% block section %}
+    <div class="container">
+        {% set pending = analyses|filter(analysis => analysis.needsAttention) %}
+        {% set fillable = analyses|filter(analysis => analysis.hasProposals) %}
+
+        {% if pending is empty %}
+            {% embed 'note.html.twig' with {type:'info'} %}
+                {% block body %}
+                    <p>Every form element has a field name.</p>
+                {% endblock %}
+            {% endembed %}
+        {% endif %}
+
+        {% if fillable|length > 1 %}
+            <p>
+                <a href="{{ uri('page.form-fieldnames.migrate-all', {returnUrl: permanentUri}) }}"
+                   class="btn btn-warning"
+                   data-confirm="Fill in the missing names of all {{ fillable|length }} forms? Existing names are not changed.">
+                    Fill in all missing names
+                </a>
+            </p>
+        {% endif %}
+
+        {% for analysis in pending %}
+            <h2>{{ analysis.form.name }}</h2>
+            <p><code>{{ analysis.form.persistenceIdentifier }}</code></p>
+
+            {% for problem in analysis.problems %}
+                {% embed 'note.html.twig' with {type:'warning'} %}
+                    {% block body %}<p>{{ problem }}</p>{% endblock %}
+                {% endembed %}
+            {% endfor %}
+
+            {% if analysis.hasProposals %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Type</th>
+                            <th>Label</th>
+                            <th>Proposed name</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for field in analysis.proposals %}
+                            <tr>
+                                <td>{{ field.elementIdentifier }}</td>
+                                <td>{{ field.elementType }}</td>
+                                <td>{{ field.label }}</td>
+                                <td><code>{{ field.proposedName }}</code></td>
+                                <td>{{ field.source.value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <p>
+                    <a href="{{ uri('page.form-fieldnames.migrate', {form: analysis.form.persistenceIdentifier, returnUrl: permanentUri}) }}"
+                       class="btn btn-primary"
+                       data-confirm="Fill in the {{ analysis.proposals|length }} missing names of &quot;{{ analysis.form.name }}&quot;?">
+                        Fill in these names
+                    </a>
+                </p>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
