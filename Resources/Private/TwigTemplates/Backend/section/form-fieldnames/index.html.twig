@@ -2,13 +2,24 @@
 
 {% block section %}
     <div class="container">
+        <p>
+            Every form element has a name that identifies its data when a submission is
+            processed. It is separate from the label, which is written for people and can
+            be translated, so it stays the same when the wording changes.
+        </p>
+        <p>
+            This page lists the elements that have no name yet and proposes one derived
+            from their label. Nothing is written until you press a button, and an existing
+            name is never changed.
+        </p>
+
         {% set pending = analyses|filter(analysis => analysis.needsAttention) %}
         {% set fillable = analyses|filter(analysis => analysis.hasProposals) %}
 
         {% if pending is empty %}
             {% embed 'note.html.twig' with {type:'info'} %}
                 {% block body %}
-                    <p>Every form element has a field name.</p>
+                    <p>Nothing to do - no form is missing a field name.</p>
                 {% endblock %}
             {% endembed %}
         {% endif %}
