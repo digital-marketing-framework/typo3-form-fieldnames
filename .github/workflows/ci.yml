@@ -9,7 +9,7 @@ permissions:
   contents: read
 jobs:
   code-quality:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -44,7 +44,7 @@ jobs:
         run: "composer ci:static\n"
   code-tests:
     name: 'Coverage tests'
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       DB_DATABASE: typo3
       DB_USER: root
